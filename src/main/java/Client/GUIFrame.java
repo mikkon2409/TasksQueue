@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -23,6 +25,8 @@ public class GUIFrame extends JFrame {
     private static Logger log = Logger.getLogger(GUIFrame.class.getName());
     private ExecutorService service = Executors.newFixedThreadPool(2);
     private Client client;
+    private JPanel taskManager;
+    private List<ManageFileWidget> files = new ArrayList<ManageFileWidget>();
 
     public GUIFrame(String name) {
         setContentPane(rootPanel);
@@ -30,7 +34,10 @@ public class GUIFrame extends JFrame {
         setMinimumSize(new Dimension(600, 500));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        fileManagerPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        fileManagerPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        taskManager = new JPanel();
+        fileManagerPane.setViewportView(taskManager);
+        taskManager.setLayout(new BoxLayout(taskManager, BoxLayout.Y_AXIS));
         reconnectButton.addActionListener(actionEvent -> client.connect());
         reconnectButton.setEnabled(false);
         fileChooser = new JFileChooser();
@@ -44,9 +51,9 @@ public class GUIFrame extends JFrame {
         });
         uploadButton.addActionListener(actionEvent -> {
             textArea1.append("xyu\n");
-            JButton btn = new JButton("Text");
-            btn.setSize(new Dimension(150, 150));
-            fileManagerPane.add(btn);
+            taskManager.add(new ManageFileWidget());
+//            taskManager.repaint();
+            fileManagerPane.revalidate();
         });
         setVisible(true);
         service.execute(client = new Client(this));
