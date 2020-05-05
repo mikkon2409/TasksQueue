@@ -5,10 +5,12 @@ import java.util.concurrent.Callable;
 public class FileExecutor implements Callable {
     private String cmd;
     private boolean wait;
+
     public FileExecutor(String cmd, boolean wait) {
         this.cmd = cmd;
         this.wait = wait;
     }
+
     @Override
     public Process call() throws Exception {
         Process p;

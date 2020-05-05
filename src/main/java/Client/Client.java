@@ -5,12 +5,18 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client implements Runnable {
     private GUIFrame superFrame;
     private static Logger log = Logger.getLogger(Client.class.getName());
+    private static final Path commonSpace = Paths.get("clientWorkspace");
+    private Path workspace;
     private ClientDesc clientDesc;
     private Socket socket;
     DataOutputStream dos;
@@ -18,12 +24,21 @@ public class Client implements Runnable {
     public Client(GUIFrame superFrame) {
         this.superFrame = superFrame;
         try {
+            workspace = createWorkspace();
+        } catch (IOException e) {
+            superFrame.showError(e.getMessage());
+        }
+        try {
             clientDesc = new ClientDesc();
             superFrame.setUserID(clientDesc.getClientID().toString());
             connect();
         } catch (IOException e) {
             superFrame.showError(e.getMessage());
         }
+    }
+
+    private Path createWorkspace() throws IOException {
+        return Files.createDirectories(Paths.get(commonSpace.toString()));
     }
 
     public void connect() {
