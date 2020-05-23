@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +25,7 @@ public class Server {
                 if (br.ready()) {
                     String serverCommand = br.readLine();
                     if (serverCommand.equalsIgnoreCase("quit")) {
-                        System.out.println("Main Server initiate exiting...");
+                        log.info("Main Server initiate exiting...");
                         server.close();
                         break;
                     }

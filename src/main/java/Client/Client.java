@@ -1,26 +1,27 @@
 package Client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import Shared.ExecutableFileUploader;
+
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client implements Runnable {
+    private ExecutorService service = Executors.newCachedThreadPool();
     private GUIFrame superFrame;
     private static Logger log = Logger.getLogger(Client.class.getName());
     private static final Path commonSpace = Paths.get("clientWorkspace");
     private Path workspace;
     private ClientDesc clientDesc;
     private Socket socket;
-    DataOutputStream dos;
     DataInputStream dis;
+    ObjectOutputStream oos;
     public Client(GUIFrame superFrame) {
         this.superFrame = superFrame;
         try {
@@ -55,12 +56,12 @@ public class Client implements Runnable {
 
     private void createSocket() throws IOException {
         socket = new Socket("localhost", 3345);
-        dos = new DataOutputStream(socket.getOutputStream());
         dis = new DataInputStream(socket.getInputStream());
+        oos = new ObjectOutputStream(socket.getOutputStream());
     }
 
     private void authenticate() throws IOException {
-        dos.writeUTF(clientDesc.getClientID().toString());
+        oos.writeUTF(clientDesc.getClientID().toString());
     }
 
     @Override
@@ -77,6 +78,6 @@ public class Client implements Runnable {
     }
 
     public void uploadFileToServer(File file) {
-
+        service.execute(new ExecutableFileUploader(oos, file));
     }
 }

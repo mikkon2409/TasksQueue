@@ -1,33 +1,26 @@
 package Shared;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ExecutableFileUploader implements Runnable {
     private static Logger log = Logger.getLogger(ExecutableFileUploader.class.getName());
-    private DataOutputStream dos;
-    private File file;
+    private ObjectOutputStream oos;
+    private FileDescriptor fileDesc;
 
-    public ExecutableFileUploader(DataOutputStream dos, File file) {
-        this.dos = dos;
-        this.file = file;
+    public ExecutableFileUploader(ObjectOutputStream oos, File file) {
+        this.oos = oos;
+        fileDesc = new FileDescriptor(file);
     }
 
     @Override
     public void run() {
         try {
             log.info("Ready to upload");
-            Path path = this.file.toPath();
-            byte[] bin = Files.readAllBytes(path);
-
-            dos.writeUTF("<file>");
-            dos.writeUTF(path.getFileName().toString());
-            dos.writeInt(bin.length);
-            dos.write(bin);
+            oos.writeUTF("<file>");
+            oos.writeObject(fileDesc);
             log.info("Uploaded");
         } catch (Exception e) {
             log.log(Level.SEVERE, "UploadFile: ", e);
