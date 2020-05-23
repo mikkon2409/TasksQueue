@@ -3,11 +3,12 @@ package Shared;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FileDescriptor {
+public class FileDescriptor implements Serializable {
     private static Logger log = Logger.getLogger(FileDescriptor.class.getName());
     String name;
     long byteSize;
