@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class ClientDesc {

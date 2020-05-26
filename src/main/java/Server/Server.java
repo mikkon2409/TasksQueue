@@ -33,9 +33,11 @@ public class Server {
 
                 Socket client = server.accept();
                 log.info("Client connection accepted");
-                DataInputStream dis = new DataInputStream(client.getInputStream());
+                ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
+                ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+                log.info("Streams cerated");
                 try {
-                    String clientID = dis.readUTF();
+                    String clientID = ois.readUTF();
                     log.info(clientID);
                     UUID clientUUID = UUID.fromString(clientID);
                     MonoThreadClientHandler clientHandler;
@@ -44,7 +46,7 @@ public class Server {
                     } else {
                         clientHandler = clients.get(clientUUID);
                     }
-                    clientHandler.initConnection(client);
+                    clientHandler.initConnection(client, ois, oos);
                     service.execute(clientHandler);
                 } catch (IOException e) {
                     log.log(Level.SEVERE, "Get ClientDesc:", e);

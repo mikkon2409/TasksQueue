@@ -1,33 +1,49 @@
 package Server;
 
-import java.util.concurrent.Callable;
+import java.io.*;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class FileExecutor implements Callable {
-    private String cmd;
-    private boolean wait;
+public class FileExecutor implements Runnable {
+    private final static Logger log = Logger.getLogger(FileDescriptor.class.getName());
+    private Queue<String> logHistory;
+    private File execFile;
+    private Process proc;
+    private InputStream is;
 
-    public FileExecutor(String cmd, boolean wait) {
-        this.cmd = cmd;
-        this.wait = wait;
+    public FileExecutor(File execFile, Queue<String> logHistory) {
+        this.execFile = execFile;
+        this.logHistory = logHistory;
+    }
+
+    public Process getProc() {
+        return proc;
+    }
+
+    public void exec() {
+        try {
+            proc = Runtime.getRuntime().exec(execFile.getAbsolutePath());
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Run process", e);
+        }
     }
 
     @Override
-    public Process call() throws Exception {
-        Process p;
+    public void run() {
+        is = proc.getInputStream();
+        byte arr[] = new byte[1024];
         try {
-            p = Runtime.getRuntime().exec(cmd);
-        }
-        catch(java.io.IOException e) {
-            return null;
-        }
-        if (wait) {
-            try {
-                p.waitFor();
+            while(proc.isAlive()) {
+                int len = is.read(arr);
+                if (len > 0) {
+                    String out = execFile.getName() + " : " + new String(arr);
+                    logHistory.offer(out);
+                }
             }
-            catch(InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (IOException e) {
         }
-        return p;
     }
 }

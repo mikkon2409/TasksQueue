@@ -21,4 +21,12 @@ public class ManageFileWidget extends JPanel {
         add(lbl, BorderLayout.WEST);
         add(btn, BorderLayout.EAST);
     }
+
+    public JButton getBtn() {
+        return btn;
+    }
+
+    public JLabel getLbl() {
+        return lbl;
+    }
 }

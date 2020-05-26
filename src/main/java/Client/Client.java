@@ -1,5 +1,6 @@
 package Client;
 
+import Server.FileExecutor;
 import Shared.ExecutableFileUploader;
 
 import java.io.*;
@@ -20,7 +21,7 @@ public class Client implements Runnable {
     private Path workspace;
     private ClientDesc clientDesc;
     private Socket socket;
-    DataInputStream dis;
+    ObjectInputStream ois;
     ObjectOutputStream oos;
     public Client(GUIFrame superFrame) {
         this.superFrame = superFrame;
@@ -56,12 +57,33 @@ public class Client implements Runnable {
 
     private void createSocket() throws IOException {
         socket = new Socket("localhost", 3345);
-        dis = new DataInputStream(socket.getInputStream());
         oos = new ObjectOutputStream(socket.getOutputStream());
+        ois = new ObjectInputStream(socket.getInputStream());
     }
 
     private void authenticate() throws IOException {
         oos.writeUTF(clientDesc.getClientID().toString());
+        oos.flush();
+    }
+
+    private void getStateUpdate() {
+        log.info("State update");
+        String value;
+        try {
+            while (!(value = ois.readUTF()).equals("<state_update_end>")) {
+                String filename = value;
+                boolean state = ois.readBoolean();
+                log.info(filename + "\t" + state);
+                superFrame.updateTask(filename, state ? "Stop" : "Run",
+                        state ? actionEvent -> {
+                            stopTask(filename);
+                        } : actionEvent -> {
+                            runTask(filename);
+                        });
+            }
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Update", e);
+        }
     }
 
     @Override
@@ -69,7 +91,17 @@ public class Client implements Runnable {
         if (socket != null) {
             while (!socket.isClosed()) {
                 try {
-                    log.info(dis.readUTF());
+                    String value = ois.readUTF();
+                    switch (value) {
+                        case "<state_update_start>":
+                            getStateUpdate();
+                            break;
+                        default:
+                            if (value.contains("<output>")) {
+                                superFrame.appendText(value.replace("<output>", ""));
+                            }
+                            break;
+                    }
                 } catch (IOException e) {
                     log.log(Level.SEVERE, "Receive", e);
                 }
@@ -79,5 +111,25 @@ public class Client implements Runnable {
 
     public void uploadFileToServer(File file) {
         service.execute(new ExecutableFileUploader(oos, file));
+    }
+
+    private void runTask(String taskName) {
+        try {
+            oos.writeUTF("<run>");
+            oos.writeUTF(taskName);
+            oos.flush();
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Run task", e);
+        }
+    }
+
+    private void stopTask(String taskName) {
+        try {
+            oos.writeUTF("<stop>");
+            oos.writeUTF(taskName);
+            oos.flush();
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Stop task", e);
+        }
     }
 }

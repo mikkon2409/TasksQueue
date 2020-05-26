@@ -2,17 +2,11 @@ package Client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.Expression;
 import java.io.*;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GUIFrame extends JFrame {
@@ -26,11 +20,11 @@ public class GUIFrame extends JFrame {
     private JLabel fileName;
     private JFileChooser fileChooser;
     private static Logger log = Logger.getLogger(GUIFrame.class.getName());
-    private ExecutorService service = Executors.newFixedThreadPool(2);
+    private ExecutorService service = Executors.newCachedThreadPool();
     private Client client;
     private JPanel taskManager;
-    private File file;
-    private List<ManageFileWidget> files = new ArrayList<ManageFileWidget>();
+    private File selectedFile;
+    private HashMap<String, ManageFileWidget> files = new HashMap<>();
 
     public GUIFrame(String name) {
         setContentPane(rootPanel);
@@ -49,24 +43,38 @@ public class GUIFrame extends JFrame {
         selectFile.addActionListener(actionEvent -> {
             fileChooser.setDialogTitle("Select file");
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setCurrentDirectory(new File("/home/rvyunov/User/Projects/untitled/cmake-build-debug"));
             if (fileChooser.showOpenDialog(rootPanel) == JFileChooser.APPROVE_OPTION) {
-                file = fileChooser.getSelectedFile();
-                fileName.setText(file.getName());
+                selectedFile = fileChooser.getSelectedFile();
+                fileName.setText(selectedFile.getName());
             }
         });
+
         uploadButton.addActionListener(actionEvent -> {
-            client.uploadFileToServer(file);
+            client.uploadFileToServer(selectedFile);
         });
         setResizable(false);
         setVisible(true);
         service.execute(client = new Client(this));
     }
 
-    public void addNewTask(String lbl, String btn, ActionListener expr) {
-        ManageFileWidget file = new ManageFileWidget(fileManagerPane.getViewport().getWidth(), lbl, btn, expr);
-        files.add(file);
-        taskManager.add(file);
+    public void updateTask(String fileName, String actionName, ActionListener expr) {
+        if (files.containsKey(fileName)) {
+            log.info("11111");
+            ManageFileWidget file = files.get(fileName);
+            file.getBtn().setText(actionName);
+            file.getBtn().removeActionListener(file.getBtn().getActionListeners()[0]);
+            file.getBtn().addActionListener(expr);
+            file.revalidate();
+        } else {
+            log.info("22222");
+            ManageFileWidget file = new ManageFileWidget(
+                    fileManagerPane.getViewport().getWidth(), fileName, actionName, expr);
+            files.put(fileName, file);
+            taskManager.add(file);
+        }
         fileManagerPane.revalidate();
+        log.info("update complete");
     }
 
     public void setUserID(String userID) {
@@ -79,6 +87,10 @@ public class GUIFrame extends JFrame {
 
     public void showError(String name) {
         JOptionPane.showMessageDialog(this, name);
+    }
+
+    public void appendText(String text) {
+        textArea1.append(text);
     }
 
     public static void main(String[] args) {
