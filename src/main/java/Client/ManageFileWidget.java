@@ -6,9 +6,9 @@ import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
 public class ManageFileWidget extends JPanel {
-    private static Logger log = Logger.getLogger(ManageFileWidget.class.getName());
-    private JButton btn;
-    private JLabel lbl;
+    private static final Logger log = Logger.getLogger(ManageFileWidget.class.getName());
+    private final JButton btn;
+    private final JLabel lbl;
     public ManageFileWidget(final int width, final String name, final String btn_name, ActionListener expr) {
         setLayout(new BorderLayout());
         Dimension size = new Dimension(width, 50);

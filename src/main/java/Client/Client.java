@@ -14,9 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client implements Runnable {
-    private ExecutorService service = Executors.newCachedThreadPool();
-    private GUIFrame superFrame;
-    private static Logger log = Logger.getLogger(Client.class.getName());
+    private final ExecutorService service = Executors.newCachedThreadPool();
+    private final GUIFrame superFrame;
+    private static final Logger log = Logger.getLogger(Client.class.getName());
     private static final Path commonSpace = Paths.get("clientWorkspace");
     private Path workspace;
     private ClientDesc clientDesc;

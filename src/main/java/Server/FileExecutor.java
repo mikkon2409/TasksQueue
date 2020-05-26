@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 
 public class FileExecutor implements Runnable {
     private final static Logger log = Logger.getLogger(FileDescriptor.class.getName());
-    private Queue<String> logHistory;
-    private File execFile;
+    private final Queue<String> logHistory;
+    private final File execFile;
     private Process proc;
     private InputStream is;
 
@@ -34,7 +34,7 @@ public class FileExecutor implements Runnable {
     @Override
     public void run() {
         is = proc.getInputStream();
-        byte arr[] = new byte[1024];
+        byte[] arr = new byte[1024];
         try {
             while(proc.isAlive()) {
                 int len = is.read(arr);

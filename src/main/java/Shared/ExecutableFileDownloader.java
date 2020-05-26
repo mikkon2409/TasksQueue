@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ExecutableFileDownloader {
-    private static Logger log = Logger.getLogger(ExecutableFileDownloader.class.getName());
+    private static final Logger log = Logger.getLogger(ExecutableFileDownloader.class.getName());
 
     public static File downloadExecutableFile(ObjectInputStream oin, Path pathToWorkspace) throws IOException, ClassNotFoundException {
         FileDescriptor fd = (FileDescriptor) oin.readObject();

@@ -6,9 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ExecutableFileUploader implements Runnable {
-    private static Logger log = Logger.getLogger(ExecutableFileUploader.class.getName());
-    private ObjectOutputStream oos;
-    private FileDescriptor fileDesc;
+    private static final Logger log = Logger.getLogger(ExecutableFileUploader.class.getName());
+    private final ObjectOutputStream oos;
+    private final FileDescriptor fileDesc;
 
     public ExecutableFileUploader(ObjectOutputStream oos, File file) {
         this.oos = oos;

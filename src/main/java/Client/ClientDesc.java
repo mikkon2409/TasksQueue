@@ -8,8 +8,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 public final class ClientDesc {
-    private static Logger log = Logger.getLogger(ClientDesc.class.getName());
-    private File clientDescFile = new File("client.save");
+    private static final Logger log = Logger.getLogger(ClientDesc.class.getName());
+    private final File clientDescFile = new File("client.save");
     private UUID clientID;
     public ClientDesc() throws IOException {
         try {

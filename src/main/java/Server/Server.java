@@ -13,9 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server {
-    private static Logger log = Logger.getLogger(ClientDesc.class.getName());
-    private static ExecutorService service = Executors.newCachedThreadPool();
-    private static HashMap<UUID, MonoThreadClientHandler> clients = new HashMap<>();
+    private static final Logger log = Logger.getLogger(ClientDesc.class.getName());
+    private static final ExecutorService service = Executors.newCachedThreadPool();
+    private static final HashMap<UUID, MonoThreadClientHandler> clients = new HashMap<>();
     public static void main(String[] args) {
         try {
             ServerSocket server = new ServerSocket(3345);

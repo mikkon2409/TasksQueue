@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class LogSender implements Runnable {
     private final static Logger log = Logger.getLogger(FileDescriptor.class.getName());
-    private Queue<String> logHistory;
+    private final Queue<String> logHistory;
     private ObjectOutputStream oos;
     private boolean canWrite;
 

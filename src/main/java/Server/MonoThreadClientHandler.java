@@ -21,16 +21,16 @@ import java.util.logging.Logger;
 public class MonoThreadClientHandler implements Runnable {
     private final static Logger log = Logger.getLogger(ClientDesc.class.getName());
     private static final Path commonSpace = Paths.get("workspaces");
-    private ExecutorService logThread = Executors.newSingleThreadExecutor();
-    private ExecutorService service = Executors.newCachedThreadPool();
+    private final ExecutorService logThread = Executors.newSingleThreadExecutor();
+    private final ExecutorService service = Executors.newCachedThreadPool();
     private Socket socket;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private final UUID id;
     private Path workspace;
-    private HashMap<String, File> files = new HashMap<>();
-    private HashMap<String, FileExecutor> processes = new HashMap<>();
-    private Queue<String> logHistory = new LinkedList<>();
+    private final HashMap<String, File> files = new HashMap<>();
+    private final HashMap<String, FileExecutor> processes = new HashMap<>();
+    private final Queue<String> logHistory = new LinkedList<>();
     private LogSender logSender;
 
     public MonoThreadClientHandler(UUID clientUUID) {

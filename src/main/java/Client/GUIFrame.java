@@ -18,13 +18,13 @@ public class GUIFrame extends JFrame {
     private JScrollPane fileManagerPane;
     private JTextArea textArea1;
     private JLabel fileName;
-    private JFileChooser fileChooser;
-    private static Logger log = Logger.getLogger(GUIFrame.class.getName());
-    private ExecutorService service = Executors.newCachedThreadPool();
+    private final JFileChooser fileChooser;
+    private static final Logger log = Logger.getLogger(GUIFrame.class.getName());
+    private final ExecutorService service = Executors.newCachedThreadPool();
     private Client client;
-    private JPanel taskManager;
+    private final JPanel taskManager;
     private File selectedFile;
-    private HashMap<String, ManageFileWidget> files = new HashMap<>();
+    private final HashMap<String, ManageFileWidget> files = new HashMap<>();
 
     public GUIFrame(String name) {
         setContentPane(rootPanel);
