@@ -13,10 +13,12 @@ public class FileExecutor implements Runnable {
     private final File execFile;
     private Process proc;
     private InputStream is;
+    private MonoThreadClientHandler monoThreadClientHandler;
 
-    public FileExecutor(File execFile, Queue<String> logHistory) {
+    public FileExecutor(File execFile, Queue<String> logHistory, MonoThreadClientHandler m) {
         this.execFile = execFile;
         this.logHistory = logHistory;
+        monoThreadClientHandler = m;
     }
 
     public Process getProc() {
@@ -44,6 +46,10 @@ public class FileExecutor implements Runnable {
                 }
             }
         } catch (IOException e) {
+        } finally {
+            monoThreadClientHandler.getLogSender().setCanWrite(false);
+            monoThreadClientHandler.sendUpdateOfState();
+            monoThreadClientHandler.getLogSender().setCanWrite(true);
         }
     }
 }

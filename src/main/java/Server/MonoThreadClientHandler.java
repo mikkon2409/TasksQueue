@@ -42,14 +42,17 @@ public class MonoThreadClientHandler implements Runnable {
         }
     }
 
+    public LogSender getLogSender() {
+        return logSender;
+    }
+
     public void initConnection(Socket socket, ObjectInputStream ois, ObjectOutputStream oos) {
         this.socket = socket;
         this.ois = ois;
         this.oos = oos;
     }
 
-    private void sendUpdateOfState() {
-        log.info("State update");
+    public void sendUpdateOfState() {
         try {
             oos.writeUTF("<state_update_start>");
         } catch (IOException e) {
@@ -98,11 +101,10 @@ public class MonoThreadClientHandler implements Runnable {
                         files.putIfAbsent(tmp.getName(), tmp);
                         break;
                     case "<run>":
-                        log.info("run");
                         File file = files.get(ois.readUTF());
                         FileExecutor executor;
                         if (!processes.containsKey(file.getName())) {
-                            executor = new FileExecutor(file, logHistory);
+                            executor = new FileExecutor(file, logHistory, this);
                             processes.put(file.getName(), executor);
                         } else {
                             executor = processes.get(file.getName());
@@ -111,7 +113,6 @@ public class MonoThreadClientHandler implements Runnable {
                         service.submit(executor);
                         break;
                     case "<stop>":
-                        log.info("stop");
                         FileExecutor exec = processes.get(ois.readUTF());
                         if (exec.getProc().isAlive()) {
                             exec.getProc().destroyForcibly();
@@ -120,9 +121,6 @@ public class MonoThreadClientHandler implements Runnable {
                         break;
                     case "<update>":
                         sendUpdateOfState();
-                        break;
-                    default:
-                        log.info(value);
                         break;
                 }
                 sendUpdateOfState();
