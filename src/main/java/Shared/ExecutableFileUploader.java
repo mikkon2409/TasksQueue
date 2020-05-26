@@ -18,10 +18,8 @@ public class ExecutableFileUploader implements Runnable {
     @Override
     public void run() {
         try {
-            log.info("Ready to upload");
             oos.writeUTF("<file>");
             oos.writeObject(fileDesc);
-            log.info("Uploaded");
         } catch (Exception e) {
             log.log(Level.SEVERE, "UploadFile: ", e);
         }

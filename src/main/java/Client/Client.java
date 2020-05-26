@@ -67,13 +67,11 @@ public class Client implements Runnable {
     }
 
     private void getStateUpdate() {
-        log.info("State update");
         String value;
         try {
             while (!(value = ois.readUTF()).equals("<state_update_end>")) {
                 String filename = value;
                 boolean state = ois.readBoolean();
-                log.info(filename + "\t" + state);
                 superFrame.updateTask(filename, state ? "Stop" : "Run",
                         state ? actionEvent -> {
                             stopTask(filename);

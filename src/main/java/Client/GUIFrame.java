@@ -60,21 +60,18 @@ public class GUIFrame extends JFrame {
 
     public void updateTask(String fileName, String actionName, ActionListener expr) {
         if (files.containsKey(fileName)) {
-            log.info("11111");
             ManageFileWidget file = files.get(fileName);
             file.getBtn().setText(actionName);
             file.getBtn().removeActionListener(file.getBtn().getActionListeners()[0]);
             file.getBtn().addActionListener(expr);
             file.revalidate();
         } else {
-            log.info("22222");
             ManageFileWidget file = new ManageFileWidget(
                     fileManagerPane.getViewport().getWidth(), fileName, actionName, expr);
             files.put(fileName, file);
             taskManager.add(file);
         }
         fileManagerPane.revalidate();
-        log.info("update complete");
     }
 
     public void setUserID(String userID) {

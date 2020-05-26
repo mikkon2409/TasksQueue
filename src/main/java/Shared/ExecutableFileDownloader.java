@@ -24,7 +24,6 @@ public class ExecutableFileDownloader {
             try {
                 if (fos != null)
                     fos.close();
-                log.info("Download complete");
             }
             catch (Exception e) {
                 log.log(Level.SEVERE, "Close file after download: ", e);

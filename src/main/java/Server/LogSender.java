@@ -28,7 +28,6 @@ public class LogSender implements Runnable {
         try {
             while (true) {
                 String val = logHistory.peek();
-                log.info(val);
                 if (canWrite) {
                     if (val != null) {
                         oos.writeUTF("<output>" + val);
